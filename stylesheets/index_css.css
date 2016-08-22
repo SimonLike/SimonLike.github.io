@@ -1,8 +1,7 @@
+body{background-color: beige}
 .a_none{
-
     text-decoration: none;
 }
-
 .li_height{
     padding: 10px 0px; 
 }
@@ -36,7 +35,7 @@
 	top:15%;
 	left: 18%;
 	width: 64%;
-	background-color: beige ;
+	background-color: beige;
 }
 .top_title{
 	width:100%;
@@ -45,5 +44,6 @@
 	font-size: 22px;
 }
 .list_info{
-	margin-top: 50px;font-size: 16px
+	margin-top: 50px;
+	font-size: 16px;
 }
