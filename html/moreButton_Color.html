@@ -1,0 +1,48 @@
+ 
+
+<h1 id="toc_0">多个button，改变选中button的背景颜色、字体颜色</h1>
+
+<p><img src="http://upload-images.jianshu.io/upload_images/2916771-1188eff49f50dd8f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="20160614101656989.png"></p>
+
+<p><br /> </p>
+
+<h3 id="toc_1">上面是效果图</h3>
+
+<p><br /></p>
+
+<h3 id="toc_2">利用for循环创建5个button,其中对这个五个button一定要赋上tag值 ，因为下面的点击操作我们要用到；</h3>
+
+<p>看for循环的代码：</p>
+
+<div><pre><code class="language-css">for (int i=0; i &lt; 5; i++) {
+        UIButton *button = [[UIButton alloc] init];
+        button.frame = CGRectMake(10 + 60*i, 100, 50, 40);
+        button.tag = 100 + i;
+        [button setTitle:[NSString stringWithFormat:@&quot;button%d&quot;,i] forState:UIControlStateNormal];
+        [button setBackgroundColor:[UIColor lightGrayColor]];
+        button.titleLabel.font = [UIFont systemFontOfSize:13];
+        [button addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:button];
+    }
+    </code></pre></div>
+
+<p><br /></p>
+<h4 id="toc_3">在click:点击方法中有  UIButton *btn = (UIButton *)[self.view viewWithTag:100+i] 这么一行代码，是根据tag值获取对应for循环中的某个button；</h4>
+
+<p>代码如下：</p>
+
+<div><pre><code class="language-css"> - (void)click:(UIButton *)sender {
+    for (int i=0; i &lt; 5; i++) {
+        UIButton *btn = (UIButton *)[self.view viewWithTag:100+i];
+        if (sender.tag - 100 == i) {
+            [btn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+            [btn setBackgroundColor:[UIColor purpleColor]];
+
+        }else{
+            [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [btn setBackgroundColor:[UIColor lightGrayColor]];
+
+        }
+    }
+}</code></pre></div>
+ 

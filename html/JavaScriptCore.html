@@ -1,0 +1,220 @@
+
+
+<h1 id="toc_0">JavaScriptCore框架</h1>
+
+<p><br /><h4>
+ iOS 7中苹果正式开放加入了JavaScriptCore框架。该框架让Objective-C和JavaScript 直接进行交互 。这个框架其实只是基于WebKit实现的JavaScriptCore的的一个包装 </h4></p>
+
+<p><img style="width:96%" src="http://upload-images.jianshu.io/upload_images/2916771-a688c5114a9a504b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述"></p>
+<p><br /></p>
+<p><h4>要使用JavaScriptCore，首先我们需要引入它的头文件</h4></p>
+
+<p><code>#import &lt;JavaScriptCore/JavaScriptCore.h&gt;</code></p>
+
+<p><br /><h4>这个框架主要包括五个对象：</h4></p>
+
+<div><pre><code class="language-css"> #import &quot;JSContext.h&quot;  //提供运行环境 
+ #import &quot;JSValue.h&quot;  //是JSContext执行后的返回结果，他包括多种类型（比如基本数据类型和函数类型，对象类型等）
+ #import &quot;JSManagedValue.h&quot; //是JSValue的封装
+ #import &quot;JSVirtualMachine.h&quot;  //提供了底层资源
+ #import &quot;JSExport.h&quot;   //是一种协议</code></pre></div>
+
+<p><br /><br /></p>
+
+<h2 id="toc_0">JSContext对象</h2>
+
+<p><br /><h4>
+在OC中初始化JSContext对象，可以直接init初始化，也可根据当前webView的键获取到jscontext</h4></p>
+
+<div><pre><code class="language-css">
+ // init初始化JSContext对象 
+ JSContext *context = [[JSContext alloc] init]; 
+ 
+ //创建JSContext 对象（通过当前webView的键获取到JSContext）
+ JSContext *context=[self.webView valueForKeyPath:@&quot;documentView.webView.mainFrame.javaScriptContext&quot;];
+ </code></pre></div>
+<p><br /></p>
+<h4 id="toc_1"><p>通过JSContext对象调用js代码,这里是一个弹窗测试：</p></h4>
+
+ <p>1.OC直接拼写，实现js弹窗</p> 
+
+<div><pre><code class="language-css"> NSString *alertJS=@&quot;alert(&#39;test js OC&#39;)&quot;; //准备执行的js代码
+ [context evaluateScript:alertJS];//通过oc方法调用js的alert</code></pre></div>
+
+<p>2.引入js文件，调用js中的方法，实现js弹窗</p>
+
+<div><pre><code class="language-css">//html代码  
+//在 index.html中加入js文件
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+       &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;html/stylesheets/index_css.css&quot; /&gt;
+       &lt;script type=&quot;text/javascript&quot; src=&#39;html/js/test.js&#39;&gt;&lt;/script&gt;//引入js
+  &lt;title&gt;SimonLike&lt;/title&gt;
+&lt;/head&gt;
+
+//js代码 
+// test.js文件中方法
+function jsalert(test){
+     alert(test);
+}
+
+//OC代码
+//在OC中找到html的路径转换格式，用UIWebView进行加载，这个时候js文件、css文件也一起加了进来；
+- (void)loadHtml {
+   //创建webview
+    CGRect webViewRect = CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height - 64);
+    self.webView = [[UIWebView alloc] initWithFrame:webViewRect];
+    self.webView.backgroundColor = [UIColor lightGrayColor];
+    self.webView.scalesPageToFit = YES;
+    self.webView.delegate = self;
+    [self.view addSubview:self.webView];
+   
+   //webview加载html
+    NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@&quot;index&quot; ofType:@&quot;html&quot;];
+    NSURL *url = [NSURL fileURLWithPath:htmlPath];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    [self.webView loadRequest:request];
+}
+
+//在webview加载完成后，调用js文件中的方法，
+-(void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    NSString *alertJS=@&quot;jsalert(&#39;test js OC&#39;)&quot;; //准备执行的js代码
+    [context evaluateScript:alertJS];//通过oc方法调用js的alert
+}
+</code></pre></div>
+<p><br /></p>
+<p><h4>js调用iOS中OC方法；其中jscandoiOS就是js的方法名称，赋给是一个block 里面是iOS代码，注意事项：1，在block中避免循环引用，我们一般会对self进行弱化；2，在block中直接调用OC方法，可能会导致异常或崩溃，所以为了避免异常或崩溃 js调用oc方法时 放在GCD中 进行异步操作；</h4></p>
+
+<div><pre><code class="language-css">
+//OC中拼接，没有加载js文件写法
+[context evaluateScript:@&quot;jscandoiOS(tag)&quot;];
+
+//加载js文件写法
+function jscandoiOS(tag){
+}</code></pre></div>
+
+<div><pre><code class="language-css"> __weak typeof(self)weakSelf = self;//避免循环引用 弱化
+     context[@&quot;jscandoiOS&quot;] = ^(JSValue *value){
+        NSString *str = value.toString;//把接收到的JSValue对象转换OC中的NSString类型
+        dispatch_async(dispatch_get_main_queue(), ^{//在GCD中 进行异步操作
+            switch (str.integerValue) {
+                case 0:{//iOS  
+                 // you can do ...
+                }
+                    break;
+                  ...                 
+                default:
+                    break;
+            }
+            
+        });
+    };
+</code></pre></div>
+<p><br /><br /></p>
+
+<h2 id="toc_2">JSValue对象</h2>
+
+<p><br /></p>
+
+<p><h4>上面代码中，点击js方法“jscandoiOS”在iOS中能监听到并做出相应处理，在iOS这边接收到js所传值为JSValue对象，然后转换为OC中的NSString；对于JSValue对象转换OC类型的方法很多：</h4></p>
+
+<div><pre><code class="language-css">- (id)toObject;
+- (BOOL)toBool;
+- (double)toDouble;
+- (int32_t)toInt32;
+- (NSString *)toString;
+- (NSArray *)toArray;
+- (id)toObject;
+- (NSDictionary *)toDictionary;
+...  </code></pre></div>
+
+<p><br /><br /></p>
+
+<h2 id="toc_3">JSExport对象</h2>
+
+<p><br /></p>
+
+<h4 id="toc_4"><p> JSExport是一个协议，很方便的让JavaScript能够访问和操作Objective-C对象。</p></h4>
+
+<p>1，自定义个协议(JSExportTest)继承自JSExprot，并定义需要暴露给js的属性和方法，例：</p>
+
+<div><pre><code class="language-css">@protocol JSExportTest &lt;JSExport&gt;
+
+- (NSString *)personName;//暴露给js调用
+
+@end
+ </code></pre></div>
+
+<p>2，新建一个类对象，实现协议和方法,例：</p>
+
+<p>person.h</p>
+
+<div><pre><code class="language-css">
+#import &quot;JSExportTest.h&quot;
+
+@interface person : NSObject&lt;JSExportTest&gt;
+@end
+</code></pre></div>
+
+<p>person.m</p>
+
+<div><pre><code class="language-css">#import &quot;person.h&quot;
+
+@implementation person
+- (NSString *)personName{
+    return @&quot;this is OC&quot;;
+}
+@end
+</code></pre></div>
+
+<p>3，js方法调用</p>
+
+<div><pre><code class="language-css">-(void)jsJSExport {
+
+    person *p = [[person alloc]init];
+    context[@&quot;person&quot;] = p;
+    JSValue *value = [context evaluateScript:@&quot;person.personName()&quot;];
+    
+    NSLog(@&quot;context-&gt;%@&quot;,value);
+}
+
+打印结果： context-&gt;this is OC</code></pre></div>
+
+<p><br /><br /></p>
+
+<h2 id="toc_5">JSVirtualMachine对象</h2>
+
+<p><br /><h4>
+一个 JSVirtualMachine可以运行多个context，由于都是在同一个堆内存和同一个垃圾回收下，相互之间传值是没问题的。如果在不同的JSVirtualMachine传值，垃圾回收就不知道他们之间的关系了，可能会引起异常。</h4></p>
+
+<p><h4>JSVirtualMachine有两个方法：一个是保存JSValue对象，一个是移除JSValue对象：</h4></p>
+
+<div><pre><code class="language-css">//保存 
+- (void)addManagedReference:(id)object withOwner:(id)owner;
+//移除 
+- (void)removeManagedReference:(id)object withOwner:(id)owner;
+</code></pre></div>
+<p><br /><br /></p>
+
+<h2 id="toc_6">JSVirtualMachine对象</h2>
+
+<p><br /></p>
+
+<h4><p>引入：http://www.jianshu.com/p/bbfa8dee967e</p></h4>
+
+<h4><p>JavaScriptCore中引入了JSManagedValue类型，该类型主要是作为一个引用桥接，将JSValue转为JSManagedValue类型后，可以添加到JSVirtualMachine对象中，这样能够保证你在使用过程中JSValue对象不会被释放掉，当你不再需要该JSValue对象后，从JSVirtualMachine中移除该JSManagedValue对象，JSValue对象就会被释放并置空。</p></h4>
+
+<h4><p>大家不要被这么多对象类型搞晕了，简单一点说，JSVirtualMachine就是一个用于保存弱引用对象的数组，加入该数组的弱引用对象因为会被该数组retain，所以保证了使用时不会被释放，当数组里的对象不再需要时，就从数组中移除，没有了引用的对象就会被系统释放。</p></h4>
+<p><br /><br /></p>
+
+<h2 id="toc_7">异常处理</h2>
+
+<div><pre><code class="language-css">context.exceptionHandler = ^(JSContext *context, JSValue *exception) {
+    [JSContext currentContext].exception = exception; 
+     NSLog(@&quot;exception:%@&quot;,exception); 
+};</code></pre></div>
+

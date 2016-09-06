@@ -1,0 +1,143 @@
+
+
+<h1 id="toc_0">简介</h1>
+
+<p><br /></p>
+
+<h4 id="toc_1"><p>网上对于delegate,block,notification运用都有介绍，但都是介绍的用法；我这里针对于懒人和一些基础不太好的同学进一步补充介绍（是小demo实战）！</p></h4>
+
+<h4 id="toc_2"><p>delegate是经典设计模式也就是大部分的语言都可以实现的模式，delegate只是保存了一个对象指针，直接回调，没有额外消耗。</p></h4>
+
+<h4 id="toc_3"><p>block出栈需要将使用的数据从栈拷贝到堆，当然对象的话就是加计数，使用完或者block置nil后才消除。所以我们用block时要进行弱引用：ARC下：<strong>weak typeof(self) weakSelf = self;非ARC下：</strong>block typeof(self) weakSelf = self;</p></h4>
+
+<h4 id="toc_4"><p>notification 通知的用法相对就是比较简单的，记住：有添加就要有移除；</p></h4>
+
+<p><br /></p>
+
+<h2 id="toc_5">delegate用法：</h2>
+
+<p><br /></p>
+
+<h4 id="toc_6"><p>1,定义一个vc（TestViewController），在你定义的vc.h（TestViewController.h）中进行声明</p></h4>
+
+<div><pre><code class="language-css"> @protocol TestViewDelegate;
+@interface TestViewController : UIViewController
+@property(assign, nonatomic) id &lt;TestViewDelegate&gt; testViewDelegate;
+@end
+@protocol TestViewDelegate &lt;NSObject&gt;
+-(void)selectedString:(NSString *)string;
+@end
+&gt;</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_7"><p>2,外部写好delegate在调用，在vc（TestViewController）引用TestViewDetegate.h ,之后和1一样。</p></h4>
+
+<p><img src="http://img.blog.csdn.net/20160623170758464" alt="这里写图片描述"></p>
+<p><br /></p>
+
+<h4 id="toc_8"><p>3，就是传值了，在vc(TestViewController)定义一个button在其点击方法中添加delegate的传值</p></h4>
+
+<div><pre><code class="language-css"> - (IBAction)back:(id)sender {
+    if (self.testViewDelegate &amp;&amp; [self.testViewDelegate respondsToSelector:@selector(selectedString:)]) {
+       [self.testViewDelegate selectedString:@&quot;T - T&quot;];
+    }
+}</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_9"><p>4,接收delete的传值时，在你的第一个vc(SimonViewController)添加TestViewDelegate，如图1; 点击按钮跳转到（TestViewController）中，并对delegate赋self , 如图1下面代码；</p></h4>
+
+<p><img src="http://img.blog.csdn.net/20160623172625146" alt="这里写图片描述"></p>
+
+<div><pre><code class="language-css">- (IBAction)buttonClick:(id)sender {
+    
+  TestViewController *vc = [[UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil] instantiateViewControllerWithIdentifier:@&quot;TestView&quot;];
+   vc.testViewDelegate = self;
+    
+  [self.navigationController pushViewController:vc animated:YES];
+
+}</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_10"><p>5,接收到delete传值处理</p></h4>
+
+<div><pre><code class="language-css">-(void)selectedString:(NSString *)string{
+  [self.navigationController popViewControllerAnimated:YES];//返回上个页面
+  NSLog(@&quot;string --- &gt;%@&quot;,string);
+}
+
+ 打印：string --- &gt;T - T</code></pre></div>
+<p><br /></p>
+
+<h2 id="toc_11">block用法：</h2>
+<p><br /></p>
+
+<h4 id="toc_12"><p>1，block的声明也是vc.h（TestViewController.h）中进行声明，如下：</p></h4>
+
+<div><pre><code class="language-css">typedef void (^TestViewblock)(NSString *string);
+@interface TestViewController : UIViewController
+@property(nonatomic,strong)TestViewblock testViewBlock;
+@end</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_13"><p>2，在vc(TestViewController)定义一个button在其点击方法中添加block的传值</p></h4>
+
+<div><pre><code class="language-css">- (IBAction)back:(id)sender {
+   if (_testViewBlock) {
+      _testViewBlock(@&quot;T - T&quot;);
+   }
+}</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_14"><p>3,跳转到vc(TestViewController)及block值处理：</p></h4>
+
+<div><pre><code class="language-css">- (IBAction)buttonClick:(id)sender {
+- 
+    TestViewController *vc = [[UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil] instantiateViewControllerWithIdentifier:@&quot;TestView&quot;];
+    [self.navigationController pushViewController:vc animated:YES];
+       __weak typeof(self) weakSelf=self;//避免block 循环缓存
+       vc.testViewBlock=^(NSString *string){
+            [weakSelf.navigationController popViewControllerAnimated:YES];//返回上个页面
+            NSLog(@&quot;Block---&gt;%@&quot;,string);
+     };
+}
+
+打印：Block---&gt;T - T</code></pre></div>
+<p><br /></p>
+
+<h2 id="toc_15">notification（通知）用法：</h2>
+<p><br /></p>
+
+<h4 id="toc_16"><p>1,在vc(SimonViewController)的viewWillAppear添加通知，为了避免重复添加我这里执行了先移除再添加：</p></h4>
+
+<div><pre><code class="language-css"> -(void)viewWillAppear:(BOOL)animated{
+     [super viewWillAppear:animated];
+     [[NSNotificationCenter defaultCenter] removeObserver:self];//移除通知
+     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notification:) name:@&quot;test_notification&quot; object:nil];//添加通知
+}</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_17"><p>2,在vc(TestViewController)点击进行传值</p></h4>
+
+<div><pre><code class="language-css"> - (IBAction)back:(id)sender {   
+      [[NSNotificationCenter defaultCenter] postNotificationName:@&quot;test_notification&quot; object:@&quot;T - T&quot;];
+   }</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_18"><p>3,在vc(SimonViewController)接收通知处理</p></h4>
+
+<div><pre><code class="language-css"> -(void)notification:(NSNotification *)notification{
+      NSString *sting = [notification object];
+      NSLog(@&quot;sting ---&gt;%@&quot;,sting);
+ }
+ 
+ 打印：sting ---&gt;T - T</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_19"><p>4,在vc(SimonViewController)的viewWillDisappear中移除通知，通知移除后，在vc(TestViewController)进行传值，将不被接收处理；小伙伴们，可以试试！</p></h4>
+
+<div><pre><code class="language-css">-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];  
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}</code></pre></div>
+
+

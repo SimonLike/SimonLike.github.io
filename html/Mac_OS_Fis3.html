@@ -1,0 +1,158 @@
+
+
+<h1 id="toc_0">摘要</h1>
+
+<p><br />
+<h4>安装fis3首先要安装 node 和 npm ; 如果不知道自己是否已经安装 node 和 npm ; 那就检测下(npm同样可以用下面方式检测):</h4></p>
+
+<div><pre><code class="language-css">$ node -v
+</code></pre></div>
+<br />
+<h4>如果已经安装,会返回node的版本号</h4>
+
+<div><pre><code class="language-css">v4.4.6</code></pre></div>
+
+<p><br />
+<h4>如果没有安装</h4></p>
+
+<div><pre><code class="language-css"> -bash: node: command not found
+</code></pre></div>
+
+<p><br /></p>
+
+<h2 id="toc_1">nodejs的安装</h2>
+<br />
+<h4>去官网下载node.pkg ,双击进行安装 ; 你会发现npm也帮你安装了；node安装的同时也安装npm,真是一个意外的惊喜 !（安装过的同学可以跳过）; 官网地址：</h4>
+
+<div><pre><code class="language-css"> https://nodejs.org/en/</code></pre></div>
+<br />
+<h4>nodejs安装过后，在终端进行检测，如下就代表node和npm都已经安装过了</h4>
+
+<div><pre><code class="language-css">SimondeiMac:~ simon$ node -v
+ v4.4.6
+
+SimondeiMac:~ simon$ npm -v
+ v2.15.5</code></pre></div>
+
+<p><br /></p>
+
+<h2 id="toc_2">fis3 的安装</h2>
+<br />
+<h3>正常情况下：</h3>
+<br />
+<h4>1.安装命令行</h4>
+
+<div><pre><code class="language-css">$ npm install -g fis3  </code></pre></div>
+<br />
+<h4>2.安装成功后检测</h4>
+
+<div><pre><code class="language-css">$ fis3 -v </code></pre></div>
+<br />
+<h4>3.检测返回如下，安装成功</h4>
+
+<p><img src="http://img.blog.csdn.net/20160628152307875" alt="这里写图片描述"></p>
+
+<p><br /></p>
+
+<h3>异常情况下：</h3>
+<br />
+<h4>输入安装命令行</h4>
+
+<div><pre><code class="language-css">$ npm install -g fis3</code></pre></div>
+<br />
+<h4>报错</h4>
+
+<div><pre><code class="language-css">&gt;npm ERR! tar.unpack untar error /Users/simon/.npm/fis3/3.4.16/package.tgz
+npm ERR! Darwin 15.4.0
+npm ERR! argv &quot;/usr/local/bin/node&quot; &quot;/usr/local/bin/npm&quot; &quot;install&quot; &quot;-g&quot; &quot;fis3&quot;
+npm ERR! node v4.4.6
+npm ERR! npm  v2.15.5
+npm ERR! path /usr/local/lib/node_modules/fis3
+npm ERR! code EACCES
+npm ERR! errno -13
+npm ERR! syscall mkdir
+
+&gt;npm ERR! Error: EACCES: permission denied, mkdir &#39;/usr/local/lib/node_modules/fis3&#39;
+npm ERR!     at Error (native)
+npm ERR!  { [Error: EACCES: permission denied, mkdir &#39;/usr/local/lib/node_modules/fis3&#39;]
+npm ERR!   errno: -13,
+npm ERR!   code: &#39;EACCES&#39;,
+npm ERR!   syscall: &#39;mkdir&#39;,
+npm ERR!   path: &#39;/usr/local/lib/node_modules/fis3&#39;,
+npm ERR!   fstream_type: &#39;Directory&#39;,
+npm ERR!   fstream_path: &#39;/usr/local/lib/node_modules/fis3&#39;,
+npm ERR!   fstream_class: &#39;DirWriter&#39;,
+npm ERR!   fstream_stack: 
+npm ERR!    [ &#39;/usr/local/lib/node_modules/npm/node_modules/fstream/lib/dir-writer.js:35:25&#39;,
+npm ERR!      &#39;/usr/local/lib/node_modules/npm/node_modules/mkdirp/index.js:47:53&#39;,
+npm ERR!      &#39;FSReqWrap.oncomplete (fs.js:82:15)&#39; ] }
+npm ERR! 
+npm ERR! Please try running this command again as root/Administrator.
+
+&gt;npm ERR! Please include the following file with any support request:
+npm ERR!     /Users/simon/npm-debug.log</code></pre></div>
+<br />
+<h4>这个错误是提示：让你获取root权限 ，输入下面命令行获取权限</h4>
+
+<div><pre><code class="language-css">sudo chown -R $USER /usr/local</code></pre></div>
+<br />
+<h4>然后再次进行安装：</h4>
+
+<div><pre><code class="language-css">$ npm install -g fis3</code></pre></div>
+<br />
+<h4>会出现“npm WARN deprecated minimatch@2.0.4: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue”提示，这个提示可以不理会，不会影响我们的安装；再然后就是一个等待时间。。。这个时候fis3就在默默的安装；之后出现下面一大堆的时候------就可以恭喜你了，安装成功！</h4>
+
+<div><pre><code class="language-css">npm WARN deprecated minimatch@2.0.4: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+ 
+ fsevents@1.0.12 install /usr/local/lib/node_modules/fis3/node_modules/fis3-command-release/node_modules/chokidar/node_modules/fsevents
+ node-pre-gyp install --fallback-to-build
+
+[fsevents] Success: &quot;/usr/local/lib/node_modules/fis3/node_modules/fis3-command-release/node_modules/chokidar/node_modules/fsevents/lib/binding/Release/node-v46-darwin-x64/fse.node&quot; is installed via remote
+ 
+node-pngcrush@0.3.7 install /usr/local/lib/node_modules/fis3/node_modules/fis-optimizer-png-compressor/node_modules/node-pngcrush
+echo &quot;Hello, World.&quot;
+Hello, World.
+ 
+node-pngquant-native@1.0.4 install /usr/local/lib/node_modules/fis3/node_modules/fis-optimizer-png-compressor/node_modules/node-pngquant-native
+echo &quot;Hello, World&quot;
+
+Hello, World
+|
+images@3.0.0 install /usr/local/lib/node_modules/fis3/node_modules/fis-spriter-csssprites/node_modules/images
+echo &quot;Hello, World.&quot;
+
+Hello, World.
+/usr/local/bin/fis3 -&gt; /usr/local/lib/node_modules/fis3/bin/fis.js
+fis3@3.4.16 /usr/local/lib/node_modules/fis3
+├── fis3-deploy-local-deliver@1.0.0
+├── fis3-deploy-http-push@1.0.1
+├── fis3-deploy-encoding@1.0.0
+├── fis3-command-inspect@1.0.3
+├── fis3-errors@0.0.4
+├── colors@0.6.2
+├── fis3-hook-components@1.0.4
+├── minimist@1.1.1
+├── iconv-lite@0.2.10
+├── fis-lolcat@1.0.1 (x256@0.0.2)
+├── commander@1.3.2 (keypress@0.1.0)
+├── fis3-packager-map@1.1.3 (source-map@0.5.6)
+├── minimatch@2.0.4 (brace-expansion@1.1.5)
+├── fis-optimizer-clean-css@0.0.9 (clean-css@1.1.7)
+├── lodash@4.12.0
+├── fis3-command-server@0.0.9 (qrcode-terminal@0.10.0)
+├── glob@5.0.3 (inherits@2.0.1, once@1.3.3, inflight@1.0.5)
+├── fis-optimizer-uglify-js@0.2.1 (merge-source-map@1.0.1, uglify-js@2.4.15)
+├── tar@2.2.1 (block-stream@0.0.9, inherits@2.0.1, fstream@1.0.10)
+├── liftoff@2.2.1 (findup-sync@0.3.0, extend@2.0.1, rechoir@0.6.2, flagged-respawn@0.3.2, resolve@1.1.7)
+├── fis3-server-node@0.1.0 (yog-devtools@0.1.0, morgan@1.6.1, serve-index@1.5.0, body-parser@1.15.2, express@4.10.1)
+├── fis-command-install@0.2.17 (progress@1.1.8, semver@4.3.6, findup@0.1.5, bluebird@2.10.2, request@2.72.0, fis-scaffold-kernel@0.2.0)
+├── fis3-command-init@1.0.14 (findup@0.1.5, bluebird@2.9.21, fis-scaffold-kernel@0.2.0)
+├── fis3-command-release@1.3.8 (portfinder@0.4.0, livereload-server-spec@0.2.3, chokidar@1.4.3)
+├── fis-optimizer-png-compressor@0.1.6 (node-pngcrush@0.3.7, node-pngquant-native@1.0.4)
+└── fis-spriter-csssprites@0.3.11 (images@3.0.0)</code></pre></div>
+<br />
+<h4>做个小检测：</h4>
+
+<p><img src="http://img.blog.csdn.net/20160628152307875" alt="这里写图片描述"></p>
+
+ 

@@ -1,0 +1,276 @@
+
+<h1 id="t0">动态获取图片色值，黑点坐标</h1>
+
+<p><br /></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/2916771-c553bf6a56a9b975.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="20160615150541014.png"></p>
+
+<h4 id="toc_0"><p>如图：点击或者根据图中黑点滑动获取图片色值及黑点坐标。ColorImageView是继承UIImageView的封装，用起来很方便。</p></h4>
+<p><br /></p>
+
+<h3 id="toc_1"><p>下面我们先讲demo的ViewController布局：</p></h3>
+<p><br /></p>
+
+<h4 id="toc_2"><p>1，引进ColorImageView.h ；</p></h4>
+
+<div><pre><code class="language-css">#import &quot;ColorImageView.h&quot;          </code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_3"><p>2, 声明了两个label用于显示rag值 及黑点位置；</p></h4>
+
+<div><pre><code class="language-css">@interface ViewController ()
+@property (nonatomic,strong)UILabel *rgbLabel;//rgba
+@property (nonatomic,strong)UILabel *locationLabel;//黑点位置
+@end</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_4"><p>3, 就是把声明的label在 viewDidLoad 中进行添加：</p></h4>
+
+<div><pre><code class="language-css">    _rgbLabel = [[UILabel alloc] init];
+    _rgbLabel.frame=CGRectMake(10,60, self.view.frame.size.width-20, 23);
+    _rgbLabel.backgroundColor = [UIColor clearColor];
+    _rgbLabel.font = [UIFont systemFontOfSize:13 ];
+    _rgbLabel.textAlignment = NSTextAlignmentCenter;
+    _rgbLabel.textColor = [UIColor blackColor];
+    _rgbLabel.text = @&quot;点击或移动下面的彩色图片，获取色值！&quot;;
+    [self.view addSubview:_rgbLabel];
+    
+    _locationLabel = [[UILabel alloc] init];
+    _locationLabel.frame=CGRectMake(10,90, self.view.frame.size.width-20, 23);
+    _locationLabel.backgroundColor = [UIColor clearColor];
+    _locationLabel.font = [UIFont systemFontOfSize:13 ];
+    _locationLabel.textAlignment = NSTextAlignmentCenter;
+    _locationLabel.textColor = [UIColor whiteColor];
+    [self.view addSubview:_locationLabel];</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_5"><p>4，把封装的ColorImageView也添加在viewDidLoad中，关于ColorImageView值传出我用的是一个block，如果对block不理解，就自己上网查咯！</p></h4>
+
+<div><pre><code class="language-css">    ColorImageView *colorImageView = [[ColorImageView alloc] initWithFrame:CGRectMake((self.view.frame.size.width-248)/2,130, 248, 248)];
+    colorImageView.backgroundColor = [UIColor clearColor];
+    colorImageView.userInteractionEnabled = YES;
+    colorImageView.image = [UIImage imageNamed:@&quot;color_s&quot;];
+    //避免循序引用 弱化
+    __weak typeof(self) weakSelf = self;
+    colorImageView.block =^ (NSString *rgbaString,NSString *locationString,UIColor *color){
+        weakSelf.rgbLabel.text = rgbaString;
+        weakSelf.rgbLabel.textColor = color;
+        weakSelf.locationLabel.text = locationString;
+    };
+    [self.view addSubview:colorImageView];</code></pre></div>
+
+<p><br /></p>
+
+<h3 id="toc_6"><p>上面ViewController的介绍完了，下面就是（重头戏）ColorImageView的封装介绍：</p></h3>
+<p><br /></p>
+
+<h4 id="toc_7"><p>1，开始就是控件的添加 ，有注释 ；不用多说直接粘代码：</p></h4>
+
+<div><pre><code class="language-css">//
+//ColorImageVIew.m
+//  TableView_choose
+//
+//  Created by Simon on 16/6/15.
+//  Copyright © 2016年 Simon. All rights reserved.
+//
+#import &quot;ColorImageView.h&quot;
+#define radiusColor  120 //图片半径值
+@interface ColorImageView ()
+@property (nonatomic,strong)UIImageView *selectColorIamge;//黑点
+@property (nonatomic,copy)NSString *rgbaString;//rgb字符串
+@property (nonatomic,copy)NSString *locationString;//黑点位置字符串
+@end
+@implementation ColorImageView
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code
+        _selectColorIamge = [[UIImageView alloc] init];
+        _selectColorIamge.backgroundColor = [UIColor blackColor];
+        _selectColorIamge.frame=CGRectMake((frame.size.width-16)/2, (frame.size.height-16)/2, 16, 16);
+        _selectColorIamge.layer.cornerRadius = 8;
+        _selectColorIamge.layer.masksToBounds = YES;
+        [self addSubview:_selectColorIamge];
+ 
+    }
+    return self;
+}</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_8"><p>2，用系统自带touchesBegan touchesMoved touchesEnded方法实现我们的点击，移动；在移动中要限制黑点不能逃出色值图片的范围，就有了一个关于高中数学的运算，挺有意思的（不妨看看，是不是很多人都忘了）！这里block的传值就是这一句<em>block(</em>rgbaString,_locationString,color);</p></h4>
+
+<div><pre><code class="language-css">- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    UITouch* touch = [touches anyObject];
+    CGPoint point = [touch locationInView:self]; //where image was tapped
+    CGPoint center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
+    float distance = [self distanceFromPointX:center distanceToPointY:point];
+    if(distance&lt;radiusColor){
+        _selectColorIamge.center =point;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIColor* color = [self getPixelColorAtLocation:point];
+            if (_block) {
+                _block(_rgbaString,_locationString,color);
+            }
+         });
+     }
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch* touch = [touches anyObject];
+    CGPoint point = [touch locationInView:self]; //where image was tapped
+    CGPoint center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
+    float distance = [self distanceFromPointX:center distanceToPointY:point];
+    if(distance&lt;radiusColor){
+        _selectColorIamge.center =point;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIColor* color = [self getPixelColorAtLocation:point];
+            if (_block) {
+                _block(_rgbaString,_locationString,color);
+            }
+        });
+    }else{
+        double xx=powf(point.x-radiusColor,2);
+        double yy=powf(point.y-radiusColor,2);
+         double xy=xx+yy;//圆心到手指停留处的距离(平方)
+        double poingXy=sqrtf(xy);//圆心到手指停留处的距离(直线）
+        double Geometric = (radiusColor-1)/poingXy;//等比值
+        double groundx=(point.x-radiusColor)*Geometric+radiusColor;//圆边x坐标
+        double groundy=(point.y-radiusColor)*Geometric+radiusColor;//圆边y坐标
+        CGPoint groundByoed = CGPointMake(groundx, groundy);
+         _selectColorIamge.center =groundByoed;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIColor* color = [self getPixelColorAtLocation:point];
+            if (_block) {
+                _block(_rgbaString,_locationString,color);
+            }
+        });  
+    }
+}
+- (void) touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
+    UITouch* touch = [touches anyObject];
+    CGPoint point = [touch locationInView:self]; //
+    CGPoint center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
+    float distance = [self distanceFromPointX:center distanceToPointY:point];
+    if(distance&lt;radiusColor){
+        _selectColorIamge.center =point;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIColor* color = [self getPixelColorAtLocation:point];
+            if (_block) {
+                _block(_rgbaString,_locationString,color);
+            }
+        });
+    }   
+}</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_9"><p>3，上面看到（distanceFromPointX：distanceToPointY：）一直都有调用，他是干什么的呢；其实很简单，就是把黑点限制在牢里用的（不逃出色值图片范围）：</p></h4>
+
+<div><pre><code class="language-css"> //计算圆点所在位置
+-(float)distanceFromPointX:(CGPoint)start distanceToPointY:(CGPoint)end{
+    float distance;
+    //下面就是高中的数学，不详细解释了
+    CGFloat xDist = (end.x - start.x);
+    CGFloat yDist = (end.y - start.y);
+    distance = sqrt((xDist * xDist) + (yDist * yDist));
+    return distance;
+}</code></pre></div>
+<p><br /></p>
+
+<h4 id="toc_10"><p>4，（getPixelColorAtLocation：）和（createARGBBitmapContextFromImage：）这两个方法呢，就是关键所在了，把在色值图片上黑点的位置转化成我们想要的值。。不明白的多看看，实在不行就找度娘！</p></h4>
+
+<div><pre><code class="language-css">#pragma mark private
+- (UIColor*)getPixelColorAtLocation:(CGPoint)point {
+    UIColor* color = nil;
+    CGImageRef inImage = self.image.CGImage;
+    // Create off screen bitmap context to draw the image into. Format ARGB is 4 bytes for each pixel: Alpa, Red, Green, Blue
+    CGContextRef cgctx = [self createARGBBitmapContextFromImage:inImage];
+    if (cgctx == NULL) { return nil; /* error */ }
+    size_t w = CGImageGetWidth(inImage);
+    size_t h = CGImageGetHeight(inImage);
+    CGRect rect = {{0,0},{w,h}};
+    // Draw the image to the bitmap context. Once we draw, the memory
+    // allocated for the context for rendering will then contain the
+    // raw image data in the specified color space.
+    CGContextDrawImage(cgctx, rect, inImage);
+    if(rect.size.width==480){
+        point.x = point.x*2;
+        point.y = point.y*2;
+    }
+    // Now we can get a pointer to the image data associated with the bitmap
+    // context.
+    unsigned char* data = CGBitmapContextGetData (cgctx);
+    if (data != NULL) {
+        //读取RGB颜色值
+        //offset locates the pixel in the data from x,y.
+        //4 for 4 bytes of data per pixel, w is width of one row of data.
+        int offset = 4*((w*round(point.y))+round(point.x));
+        int alpha =  data[offset];
+        unsigned int red = data[offset+1];
+        unsigned int green = data[offset+2];
+        unsigned int blue = data[offset+3];
+        color = [UIColor colorWithRed:(red/255.0f) green:(green/255.0f) blue:(blue/255.0f) alpha:(alpha/255.0f)];
+        _rgbaString = [NSString stringWithFormat:@&quot;RGBA值： red:%d  green:%d  blue:%d  alpha:%d&quot;,red,green,blue,alpha];
+        _locationString =[NSString stringWithFormat:@&quot;黑点位置point： %.2f  %.2f&quot;,point.x,point.y];
+    }
+    // When finished, release the context
+    CGContextRelease(cgctx);
+    // Free image data memory for the context
+    if (data) {
+        free(data);
+    }
+    return color;
+}
+
+- (CGContextRef)createARGBBitmapContextFromImage:(CGImageRef) inImage {
+    CGContextRef    context = NULL;
+    CGColorSpaceRef colorSpace;
+    void *          bitmapData;
+    long             bitmapByteCount;
+    long             bitmapBytesPerRow;
+    
+    // Get image width, height. We&#39;ll use the entire image.
+    size_t pixelsWide = CGImageGetWidth(inImage);
+    size_t pixelsHigh = CGImageGetHeight(inImage);
+    // Declare the number of bytes per row. Each pixel in the bitmap in this
+    // example is represented by 4 bytes; 8 bits each of red, green, blue, and
+    // alpha.
+    bitmapBytesPerRow   = (pixelsWide * 4);
+    bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);
+    // Use the generic RGB color space.
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+    if (colorSpace == NULL)
+    {
+        fprintf(stderr, &quot;Error allocating color space\n&quot;);
+        return NULL;
+    }
+    // Allocate memory for image data. This is the destination in memory
+    // where any drawing to the bitmap context will be rendered.
+    bitmapData = malloc( bitmapByteCount );
+    if (bitmapData == NULL)
+    {
+        fprintf (stderr, &quot;Memory not allocated!&quot;);
+        CGColorSpaceRelease( colorSpace );
+        return NULL;
+    }
+    // Create the bitmap context. We want pre-multiplied ARGB, 8-bits
+    // per component. Regardless of what the source image format is
+    // (CMYK, Grayscale, and so on) it will be converted over to the format
+    // specified here by CGBitmapContextCreate.
+    context = CGBitmapContextCreate (bitmapData,
+                                     pixelsWide,
+                                     pixelsHigh,
+                                     8,      // bits per component
+                                     bitmapBytesPerRow,
+                                     colorSpace,
+                                     kCGImageAlphaPremultipliedFirst);
+    if (context == NULL)
+    {
+        free (bitmapData);
+        //fprintf (stderr, &quot;Context not created!&quot;);
+    }
+    // Make sure and release colorspace before returning
+    CGColorSpaceRelease( colorSpace );
+    return context；
+}</code></pre></div>
+

@@ -1,0 +1,168 @@
+
+
+<h1 id="toc_0">同一个tableview实现多选单选删除</h1>
+	<p><br /></p>
+<h3 id="toc_1"><p>大多初学者对tableview实现删除，点击cell是都能实现的，但对于多选，单选却不是那么理解。。</p></h3>
+
+<h3 id="toc_2"><p>写了一个demo可供参考（不当之处请及时指出）</p></h3>
+<p><br /></p>
+
+<p><h4>1,在.h文件中声明一个变量type，用于区分进入当前页面是多选，单选还是删除</h4></p>
+
+<div><pre><code class="language-css">#import &lt;UIKit/UIKit.h&gt;
+
+@interface TableView_chooseViewController : UIViewController
+@property (nonatomic,copy)NSString *type;//multiple 多选 single 单选 delete 删除
+@end
+</code></pre></div>
+<p><br /></p>
+<p><h4>2，在.m中声明一个用于储存你选中内容的数组，在demo中我用的是selectedArray ，重点在于声明UITableViewCellEditingStyle （全局化）editingStyle；</h4></p>
+
+<div><pre><code class="language-css">#import &quot;TableView_chooseViewController.h&quot;
+#import &quot;TableViewCell.h&quot;
+
+@interface TableView_chooseViewController ()&lt;UITableViewDelegate,UITableViewDataSource&gt;
+@property (weak, nonatomic) IBOutlet UITableView *tableview;
+@property (nonatomic,strong) NSMutableArray *listArray;
+@property (nonatomic,strong) NSMutableArray *selectedArray;//选中项所用数组
+@property (nonatomic,assign) UITableViewCellEditingStyle  editingStyle;//用于区分tableview的多选 单选 及滑动删除操作
+@end
+</code></pre></div>
+<p><br /></p>
+<p><h4>3，然后在viewDidLoad中根据type类型提前对editingStyle赋值</h4></p>
+
+<div><pre><code class="language-css">- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.listArray addObjectsFromArray:@[@&quot;张三&quot;,@&quot;李四&quot;,@&quot;王二&quot;,@&quot;麻子&quot;]];
+    self.tableview.delegate = self;
+    self.tableview.dataSource = self;
+    self.tableview.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    if ([self.type isEqualToString:@&quot;multiple&quot;]) {
+        self.title = @&quot;多选&quot;;
+        self.editingStyle = UITableViewCellEditingStyleDelete | UITableViewCellEditingStyleInsert;
+        self.tableview.allowsMultipleSelection = YES;
+       
+        //定义右上角按钮
+        UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithTitle:@&quot;确定&quot; style:UIBarButtonItemStylePlain target:self action:@selector(okButton)];
+        self.navigationItem.rightBarButtonItem = button;
+    }else if ([self.type isEqualToString:@&quot;single&quot;]) {
+         self.title = @&quot;单选&quot;;
+        self.editingStyle = UITableViewCellEditingStyleDelete | UITableViewCellEditingStyleInsert;
+        self.tableview.allowsSelection = YES;
+        
+        //定义右上角按钮
+        UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithTitle:@&quot;确定&quot; style:UIBarButtonItemStylePlain target:self action:@selector(okButton)];
+        self.navigationItem.rightBarButtonItem = button;
+    }else {
+         self.title = @&quot;滑动删除&quot;;
+        self.editingStyle = UITableViewCellEditingStyleDelete ;
+    }
+    // Do any additional setup after loading the view.
+}</code></pre></div>
+<p><br /></p>
+<p><h4>4，这个比较容易理解就是简单的tableViewCell的调用</h4></p>
+
+<div><pre><code class="language-css">#pragma mark --UITableView delegate datasoure
+
+//返回section的个数
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 1;
+}
+
+//返回cell的个数
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    return self.listArray.count;
+}
+
+//加载TableViewCell,布局cell中的内容
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;identifier&quot;];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle]loadNibNamed:@&quot;TableViewCell&quot; owner:nil options:nil] firstObject];
+    }
+    cell.type = self.type;
+    cell.nameLabel.text = self.listArray[indexPath.row];
+    return cell;
+}
+-(UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == self.listArray.count) {
+        return UITableViewCellEditingStyleInsert;
+    }else{
+        return self.editingStyle;
+    }
+}
+ </code></pre></div>
+<p><br /></p>
+<p><h4>5，根据type类型 用didSelectRowAtIndexPath和didDeselectRowAtIndexPath来实现多选及单选</h4></p>
+
+<div><pre><code class="language-css">//tableView点击事件
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSString *string = [self.listArray objectAtIndex:indexPath.row];
+    if ([self.type isEqualToString:@&quot;multiple&quot;]) {
+        [self.selectedArray addObject:string];
+    }else if ([self.type isEqualToString:@&quot;single&quot;]) {
+        [self.selectedArray addObject:string];
+    }else{
+    }
+}
+
+//取消tableView选中 点击事件
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSString *string = [self.listArray objectAtIndex:indexPath.row];
+    NSArray *array = [self.selectedArray mutableCopy];
+    if ([self.type isEqualToString:@&quot;multiple&quot;]) {
+        for (NSString *str in array) {
+            if ([string isEqualToString:str]) {
+                [self.selectedArray removeObject:string];
+            }
+        }
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }else if ([self.type isEqualToString:@&quot;single&quot;]){
+        [self.selectedArray removeObject:string];
+    }else{
+    }
+}</code></pre></div>
+<p><br /></p>
+<p><h4>6，这个就是大家常见的滑动删除了，不多说看代码</h4></p>
+
+<div><pre><code class="language-css">
+//删除按钮的title赋值
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return @&quot;删除&quot;;
+}
+//删除用到的函数
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    if(editingStyle == UITableViewCellEditingStyleDelete){
+        if (self.listArray.count &gt; 0) {
+            [self.listArray removeObjectAtIndex:indexPath.row];
+            [_tableview reloadData];
+        }
+    }
+}</code></pre></div>
+<p><br /></p>
+<p><h4>7，写到这里这个demo基本就是完成了，但考虑到有很多伸手党，我还是决定把TableViewCell.m的内容贴出来</h4></p>
+
+<div><pre><code class="language-css">- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    if (selected) {
+        self.selectImage.image = [UIImage imageNamed:@&quot;charter_tick&quot;];
+    }else{
+        self.selectImage.image = [UIImage imageNamed:@&quot;charter_select&quot;];
+    }
+    // Configure the view for the selected state
+}
+
+-(void)layoutSubviews{
+    [super layoutSubviews];
+    if ([self.type isEqualToString:@&quot;multiple&quot;]||[self.type isEqualToString:@&quot;single&quot;]) {
+        self.selectImage.hidden = NO;
+        self.leftCont.constant = 50;
+    }else{
+        self.selectImage.hidden = YES;
+        self.leftCont.constant = 10;
+    }
+}
+</code></pre></div>
+

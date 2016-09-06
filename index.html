@@ -2,56 +2,77 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="stylesheets/index_css.css" />
-  <title>SimonLike</title>
+    <link rel="stylesheet" type="text/css" href="thirdPartyFramework/bootstrap-dist/css/bootstrap.css" />   
+    <link rel="stylesheet" type="text/css" href="thirdPartyFramework/markdown/markdown.css" />
+
+    <script src="thirdPartyFramework/angular/angular.min.js"></script> 
+    <script src="thirdPartyFramework/angular/angular-route.js"></script> 
+    <script src="thirdPartyFramework/jquery/jquery-min.js"></script> 
+    <script src="thirdPartyFramework/template/template.js"></script> 
+    <script src="thirdPartyFramework/markdown/markdown.js"></script> 
+
+<title>SimonLike</title>
 
 </head>
 
-<body>
+<body> 
+
 <!-- 背景音乐 -->
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
     <audio controls="controls"  style="margin-top: 30px">
         <source src="images/光阴的故事.mp3" type="audio/mpeg">
     </audio>
-</div>
-
-<!--top背景色-->
-<div class="top">
-    <p style="margin-top: 40px"><h1>SimonLike.github.io</h1></p>
-</div>
-<!--left背景色-->
-<div class="left"></div>
-<!--right背景色-->
-<div class="right"></div>
-
-<!--内容区-->
-<div class="content">
-    <p class="top_title"> 我的博客 </p>
-
-    <div class="list_info">
-        <ol >
-            <li class="li_height">
-                <a class="a_none" href="http://blog.csdn.net/secret_frist/article/details/51682466">动态获取图片色值，黑点坐标（2016-06-15 15:05）</a>
-            </li>
-            <li class="li_height">
-                <a class="a_none" href="http://blog.csdn.net/secret_frist/article/details/51669196">多个button，改变选中button的背景颜色、字体颜色（2016-06-14 10:17）</a>
-            </li>
-            <li class="li_height">
-                <a class="a_none" href="http://blog.csdn.net/secret_frist/article/details/51657350">同一个tableview实现多选单选删除（2016-06-13 14:14）</a>
-            </li>
-            <li class="li_height">
-                <a class="a_none" href="http://blog.csdn.net/secret_frist/article/details/51735243">IOS常用的宏定义（2016-06-22 16:26）</a>
-            </li>
-            <li class="li_height">
-                <a class="a_none" href="http://blog.csdn.net/Secret_Frist/article/details/51745776">delegate,block,notification三者的运用（2016-06-23 18:12）</a>
-            </li>
-            <li class="li_height">
-                <a class="a_none" href="http://blog.csdn.net/secret_frist/article/details/51776445">Mac OS下fis3 安装教程（2016-06-28 15:38）</a>
-            </li>
-        </ol>
+</div> -->
+<!-- <div ng-app = "myapp" ng-controller="appctl"> -->
+<div ng-app = "myapp" >
+    <!--left背景色-->
+    <div ng-controller="leftctl" class="left">
+        <div class="self_info">
+            
+        </div>
+  
+        <div class="sidebar"> 
+            <div ng-repeat = "x in leftinfo" class="btnwith" id="side{{x.index}}" ng-click="sideDeatil(x.index)" > 
+                {{x.name}}
+            </div> 
+        </div>
     </div>
+
+    <!--meun-->
+    <div id="sda" ng-controller="sidebarctl" class="sidebar_info">
+        <p id="menu_title" class="menu_title">所有</p>
+
+        <div class="list_info">
+<!-- <div  class="list_box" ng-repeat="x in names" ng-click = "joinDetail($index + 1)">
+                <p>{{x.conent}}</p>
+                <p>{{x.time}}</p>
+            </div>  -->
+           <a ng-repeat="x in names"  href="#/{{x.url}}"> 
+                <div class="list_box">
+                    <p>{{x.conent}}</p>
+                    <p>{{x.time}}</p>
+                </div> 
+            </a>
+     <!--        <li><a href="#/">首页</a></li>
+            <li><a href="#/computers">电脑</a></li>
+            <li><a href="#/printers">打印机</a></li>
+            <li><a href="#/blabla">其他</a></li>   -->
+     
+        </div>
+    </div>
+    <!--内容区-->
+    <div id="loadhtml" ng-controller="contentctl" class="content" >
+             <div ng-view="">
+    </div>
+
+    </div>
+
 </div>
+ 
+
+<script src="js/index.js"></script> 
 
 <script type="text/javascript">
 

@@ -1,0 +1,121 @@
+
+
+<h1 id="toc_0">常用宏定义</h1>
+
+<p><br /></p>
+
+<h4 id="toc_1">设备屏幕的宽度高度</h4>
+
+<blockquote>
+<h5 id="toc_2">#define ScreenWidth [UIScreen mainScreen].bounds.size.width</h5>
+
+<h5 id="toc_3">#define ScreenHeight [UIScreen mainScreen].bounds.size.height</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_4">设备机型</h4>
+
+<blockquote>
+<h5 id="toc_5">#define IPhone4 (([[UIScreen mainScreen] bounds].size.height == 480) ? YES : NO)</h5>
+
+<h5 id="toc_6">#define IPhone5 (([[UIScreen mainScreen] bounds].size.height == 568) ? YES : NO)</h5>
+
+<h5 id="toc_7">#define IPhone6_6s (667 == [[UIScreen mainScreen] bounds].size.height ? YES : NO)</h5>
+
+<h5 id="toc_8">#define IPhone6p_6ps (736 == [[UIScreen mainScreen] bounds].size.height ? YES : NO)</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_9">设备机型屏幕宽度</h4>
+
+<blockquote>
+<h5 id="toc_10">#define IPhoneW<em>4</em>5 (([[UIScreen mainScreen] bounds].size.width == 320) ? YES : NO)</h5>
+
+<h5 id="toc_11">#define IPhoneW_6 _6s (375 == [[UIScreen mainScreen] bounds].size.width ? YES : NO)</h5>
+
+<h5 id="toc_12">#define IPhoneW<em>6p</em>6ps (414 == [[UIScreen mainScreen] bounds].size.width ? YES : NO)</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_13">获取系统版本</h4>
+
+<blockquote>
+<h5 id="toc_14">#define IOS<em>Versinon</em>f [[[UIDevice currentDevice] systemVersion] floatValue]</h5>
+
+<h5 id="toc_15">#define IOS_Versinon [[UIDevice currentDevice] systemVersion]</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_16">设备系统版本判断</h4>
+
+<blockquote>
+<h5 id="toc_17">#define Deviece7  ([[UIDevice currentDevice].systemVersion doubleValue]==7.0f)</h5>
+
+<h5 id="toc_18">#define Deviece8  ([[UIDevice currentDevice].systemVersion doubleValue]==8.0f)</h5>
+
+<h5 id="toc_19">#define Deviece9  ([[UIDevice currentDevice].systemVersion doubleValue]==9.0f)</h5>
+
+<h5 id="toc_20">//系统版本8.0以上</h5>
+
+<h5 id="toc_21">#define Deviece9  ([[UIDevice currentDevice].systemVersion doubleValue]&gt;=8.0f)</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_22">是iPad还是iPhone</h4>
+
+<blockquote>
+<h5 id="toc_23">#define isPad (UI<em>USER</em>INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)</h5>
+
+<h5 id="toc_24">#define someThing (UI<em>USER</em>INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)? ipad: iphone</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_25">字体定义</h4>
+
+<blockquote>
+<h5 id="toc_26">#define systemFont(f) ([UIFont systemFontOfSize:f])</h5>
+
+<h5 id="toc_27">#define boldSystemFont(f) ([UIFont boldSystemFontOfSize:f])</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_28">颜色定义</h4>
+
+<blockquote>
+<p>1，常见RGB颜色定义</p>
+
+<h5 id="toc_29">#define RGB(r,g,b)  ([UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f])</h5>
+
+<h5 id="toc_30">#define RGBAlpha(r,g,b,a)  ([UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a])</h5>
+
+<p>2，十六进制颜色定义</p>
+
+<h5 id="toc_31">#define kSixteenColor(rgbValue) [UIColor colorWithRed:((float)((rgbValue &amp; 0xFF0000) &gt;&gt; 16))/255.0 green:((float)((rgbValue &amp;0xFF00) &gt;&gt; 8))/255.0 blue:((float)(rgbValue &amp; 0xFF))/255.0 alpha:1.0]</h5>
+
+<h5 id="toc_32">#kSixteenColorAlpha(rgbValue,a) [UIColor colorWithRed:((float)((rgbValue &amp; 0xFF0000) &gt;&gt; 16))/255.0 green:((float)((rgbValue &amp;0xFF00) &gt;&gt; 8))/255.0 blue:((float)(rgbValue &amp; 0xFF))/255.0 alpha:a]</h5>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="toc_33">NSLog打印定义</h4>
+
+<blockquote>
+<h5 id="toc_34">#ifdef DEBUG</h5>
+
+<h5 id="toc_35">#// #define NSLog(format, ...) NSLog((@&quot;[文件名:%s]&quot; &quot;[函数名:%s]&quot; &quot;[行号:%d]&quot; format), <strong>FILE</strong>, <strong>FUNCTION</strong>, <strong>LINE</strong>, ##<strong>VA_ARGS</strong>);</h5>
+
+<h5 id="toc_36">#define DoNSLog(format, ...) (NSLog((@&quot;%s &quot; format), <strong>func</strong>, ##<strong>VA_ARGS</strong>));</h5>
+
+<h5 id="toc_37">#else</h5>
+
+<h5 id="toc_38">#define DoNSLog(format, ...)</h5>
+
+<h5 id="toc_39">#endif</h5>
+</blockquote>
