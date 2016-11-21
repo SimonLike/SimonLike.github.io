@@ -15,22 +15,36 @@ body{background-color: beige;height: 100%}*/
 	text-align: center; 
 	background-color: burlywood;
 }
-.left{
+
+.left_meun{
 	position: absolute;
+	z-index: 9;
 	top:0%; 
 	left: 0%;
-	width: 150px;
+	width: 500px;
+	height: 100%;
+}
+
+.left_info{
+ 	float: left;
+	width: 30%;
 	height: 100%;
 	background-color: burlywood;
-}
+ }
+
+.sidebar_info{
+ 	float: left;
+	width: 66%;
+	height: 100%;
+ 	background-color: #f1f1f1;
+    padding-bottom: 15px;
+ }
 .self_info{
 	width: 100%;
 	height: 150px;
 }
 .sidebar{
-	/*padding: 15px;*/
 	text-align: center;
-	width: 100%;
 }
 /*.sidebar div:first-child:after{
  	position: absolute;
@@ -47,6 +61,7 @@ body{background-color: beige;height: 100%}*/
 	width: 100%;
 	padding: 15px 0px;
 }
+
 .btn_active:after{
 	position: absolute;
 	right: 0px;
@@ -60,34 +75,24 @@ body{background-color: beige;height: 100%}*/
 {
     background-color:#ff4a39;
 }*/
-.sidebar_info{
-	position: absolute;
-	top: 0px;
-	left: 150px;
-	width: 300px;
-	height: 100%;
-	/*z-index: 10;*/
-	background-color: #000;
-	opacity:0.6;
-    padding-bottom: 15px;
-}
+
 .menu_title{
-	position: absolute;
-	width: 100%;
+ 	width: 100%;
 	padding: 14px; 
 	text-align: center;
 	background-color: burlywood;
 	font-size: 16px;
 	color: green;
-	margin: 0;
-}
+ }
 .list_info{
-	position: absolute;
-	top: 50px;
-	bottom: 15px;
-	width: 100%;
+ 
+    width: 100%;
     font-size: 16px;
+    height: 100%;
     overflow: auto;
+    padding-bottom: 100px;
+    margin-bottom: -50px;
+    /*box-sizing: border-box;*/
 }
 .list_box{
 	background-color: #fff;
@@ -109,4 +114,67 @@ body{background-color: beige;height: 100%}*/
     overflow: auto;
     padding: 2% 10% 10% 10%;
 }
+.meun_do{
+    position:fixed  ;
+	top: 60px ;
+	left: 20px;
+	padding: 20px;
+	background-color: #ff4a39;
+	display: none;
+}
 
+@media (max-width: 767px) {
+ 	.left_meun {
+ 	  	display: none;
+ 	}
+ 	.meun_do {
+ 	 	display: block;
+ 	}
+ 	.content{
+ 		left: 0px;
+ 	}
+}
+@media (min-width: 768px) {
+  	.left_meun {
+    	display: none;
+  	}
+  	.meun_do {
+    	display: block;
+  	}
+  	.content{
+  		left: 0px;
+ 	}
+}
+@media (min-width: 992px) {
+   .left_meun {
+    	display: block;
+  	}
+  	.meun_do {
+  	  	display: none;
+  	}
+  	.content{
+  		left: 500px;
+  	}
+}
+@media (min-width: 1200px) {
+   .left_meun {
+   	 	display: block;
+    }
+ 	.meun_do {
+ 	  	display: none;
+ 	}
+ 	.content{
+  		left: 500px;
+  	}
+}
+
+
+/*.meun_do{
+    position:fixed ! important;
+	top: 30px ! important;
+	left: 30px;
+	padding: 15px;
+	background-color: #f1f1f1;
+	z-index: 9;
+	display: none ! important;
+}*/

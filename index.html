@@ -25,47 +25,42 @@
         <source src="images/光阴的故事.mp3" type="audio/mpeg">
     </audio>
 </div> -->
-<!-- <div ng-app = "myapp" ng-controller="appctl"> -->
-<div ng-app = "myapp" >
+<div ng-app = "myapp" ng-controller="appctl">
+
+    <div class="left_meun">
     <!--left背景色-->
-    <div ng-controller="leftctl" class="left">
-        <div class="self_info">
-            
-        </div>
-  
-        <div class="sidebar"> 
-            <div ng-repeat = "x in leftinfo" class="btnwith" id="side{{x.index}}" ng-click="sideDeatil(x.index)" > 
-                {{x.name}}
-            </div> 
-        </div>
-    </div>
-
-    <!--meun-->
-    <div id="sda" ng-controller="sidebarctl" class="sidebar_info">
-        <p id="menu_title" class="menu_title">所有</p>
-
-        <div class="list_info">
-<!-- <div  class="list_box" ng-repeat="x in names" ng-click = "joinDetail($index + 1)">
-                <p>{{x.conent}}</p>
-                <p>{{x.time}}</p>
-            </div>  -->
-           <a ng-repeat="x in names"  href="#/{{x.url}}"> 
-                <div class="list_box">
-                    <p>{{x.conent}}</p>
-                    <p>{{x.time}}</p>
+        <div  class="left_info">
+            <div class="self_info">
+                
+            </div>
+             
+            <div class="sidebar"> 
+                <div ng-repeat = "x in leftinfo" class="btnwith" id="side{{x.index}}" ng-click="sideDeatil(x.index)" > 
+                    {{x.name}}
                 </div> 
-            </a>
-     <!--        <li><a href="#/">首页</a></li>
-            <li><a href="#/computers">电脑</a></li>
-            <li><a href="#/printers">打印机</a></li>
-            <li><a href="#/blabla">其他</a></li>   -->
-     
+            </div>
+        </div>
+    
+        <!--meun-->
+        <div id="sda"  class="sidebar_info">
+            <p id="menu_title" class="menu_title">所有</p>
+    
+            <div class="list_info">
+               <a ng-repeat="x in names"  href="#/{{x.url}}"> 
+                    <div class="list_box">
+                        <p>{{x.conent}}</p>
+                        <p>{{x.time}}</p>
+                    </div> 
+                </a>
+            </div>
         </div>
     </div>
+
     <!--内容区-->
-    <div id="loadhtml" ng-controller="contentctl" class="content" >
-             <div ng-view="">
-    </div>
+    <div id="loadhtml"  class="content" >
+
+        <div class="meun_do" ng-click="showMeun()"></div>
+        <div ng-view=""></div>
 
     </div>
 
