@@ -4,11 +4,9 @@
 <head>
 <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="stylesheets/index_css.css" />
-    <link rel="stylesheet" type="text/css" href="thirdPartyFramework/bootstrap-dist/css/bootstrap.css" />   
+    <link rel="stylesheet" type="text/css" href="thirdPartyFramework/bootstrap-dist/bootstrap.min.css" />   
     <link rel="stylesheet" type="text/css" href="thirdPartyFramework/markdown/markdown.css" />
 
-    <script src="thirdPartyFramework/angular/angular.min.js"></script> 
-    <script src="thirdPartyFramework/angular/angular-route.js"></script> 
     <script src="thirdPartyFramework/jquery/jquery-min.js"></script> 
     <script src="thirdPartyFramework/template/template.js"></script> 
     <script src="thirdPartyFramework/markdown/markdown.js"></script> 
@@ -25,46 +23,38 @@
         <source src="images/光阴的故事.mp3" type="audio/mpeg">
     </audio>
 </div> -->
-<div ng-app = "myapp" ng-controller="appctl">
 
-    <div class="left_meun">
-    <!--left背景色-->
-        <div  class="left_info">
-            <div class="self_info">
-                
-            </div>
-             
-            <div class="sidebar"> 
-                <div ng-repeat = "x in leftinfo" class="btnwith" id="side{{x.index}}" ng-click="sideDeatil(x.index)" > 
-                    {{x.name}}
-                </div> 
-            </div>
-        </div>
-    
-        <!--meun-->
-        <div id="sda"  class="sidebar_info">
-            <p id="menu_title" class="menu_title">所有</p>
-    
-            <div class="list_info">
-               <a ng-repeat="x in names"  href="#/{{x.url}}"> 
-                    <div class="list_box">
-                        <p>{{x.conent}}</p>
-                        <p>{{x.time}}</p>
-                    </div> 
-                </a>
-            </div>
-        </div>
+<div class="left_meun">
+<!--left背景色-->
+    <div  class="left_info">
+        <div class="self_info"> </div>
+         
+        <ul class="sidebar"> 
+            <li class="btnwith btn_active" flag = 0>全部</li>
+            <li class="btnwith" flag = 1>iOS</li>
+            <li class="btnwith" flag = 2>web</li>
+        </ul>
     </div>
 
-    <!--内容区-->
-    <div id="loadhtml"  class="content" >
-
-        <div class="meun_do" ng-click="showMeun()"></div>
-        <div ng-view=""></div>
-
+    <!--meun-->
+    <div id="sda"  class="sidebar_info">
+        <p id="menu_title" class="menu_title">所有</p>
+        <ul id='meunid' class="list_info"></ul> 
     </div>
-
 </div>
+
+<!--内容区-->
+<div id="loadhtml"  class="content"></div>
+
+
+<script type="text/html" id = 'meun_list'>
+    {{each}}
+        <li class="list_box" url ='{{$value.url}}'>
+            <p>{{$value.conent}}</p>
+            <p>{{$value.time}}</p>
+        </li> 
+    {{/each}}
+</script>
  
 
 <script src="js/index.js"></script> 
